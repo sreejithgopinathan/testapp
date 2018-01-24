@@ -1,0 +1,86 @@
+<html>
+<head>
+    <title>Home</title>
+    <link rel="stylesheet" href="/static/bootstrap.min.css"> 
+    <style type="text/css">
+        .col { padding: 10px; }
+    </style>
+    <script src="/static/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            LoadData();
+
+            $("#btnSave").click(function(){
+                var empname = $.trim($("#txtName").val());
+                if(empname != '') {
+                    $.ajax({
+                        url: '/SaveEmployee', 
+                        type: 'POST', 
+                        contentType: 'application/json', 
+                        data: JSON.stringify({ Name:empname })}
+                    ).done(function(){
+                        $("#txtName").val('');
+                        LoadData();
+                    });
+                }
+                else {
+                    alert('Name is required');
+                }     
+            });
+        });  
+
+        function LoadData() {
+            $.get('/EmployeeList', function(result){
+                var empList = jQuery.parseJSON(result.data);
+                var html = '';
+                $.each(empList, function(i, item) {
+                    html += '<div class="row" style="border-bottom:solid 1px #666;">';
+                    html += '<div class="col-sm-4 col" style="width:60px;">' + (i + 1) + '</div>';
+                    html += '<div class="col-sm-4 col" style="width:400px;">' + item.Name + '</div>';
+                    html += '<div class="col-sm-4 col" style="width:60px;"><button onclick="DeleteItem(this, ' + item.Id + ')" class="btn btn-primary">X</button></div>';
+                    html += '</div>';
+                });
+                $("#grid").html(html);
+            });
+        }   
+
+        function DeleteItem(obj, id) {
+            if(confirm('Do you want to delete?')) {
+                $.get('/DeleteEmployee/' + id, function(result){
+                    if(result.status == 'success') {
+                        $(obj).closest("div.row").remove();
+                    }
+                });
+            }
+        }           
+    </script>   
+</head>
+<body>
+ <div>
+<div>
+<nav class="navbar navbar-inverse" role="navigation" style="padding-left:130px;">
+    <ul class="nav navbar-nav">
+        <li class="active"><a href="/">Home<span class="sr-only">(current)</span></a></li>
+        <li><a href="/about">About us</a></li>
+        <li><a href="/contact">Contact us</a></li>
+    </ul>
+</nav>
+</div>
+  <br/>
+  <div class="jumbotron">
+      <div  class="container" style="width:600px;">
+        <div class="row" style="border-bottom:solid 1px #666;">
+            <div class="col-sm-4 col" style="width:60px;"></div>
+            <div class="col-sm-4 col" style="width:300px;">
+                <input type="text" id="txtName" class="form-control" placeholder="Name" /> 
+            </div> 
+            <div class="col-sm-4 col">
+                <button class="btn btn-primary" id="btnSave">Save</buttn>
+            </div>       
+        </div>  
+    </div>  
+    <div id="grid" class="container" style="width:600px;"></div>
+</div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,17 @@
+-- Table: public."Employees"
+
+-- DROP TABLE public."Employees";
+
+CREATE TABLE public."Employees"
+(
+    "Id" integer NOT NULL,
+    "Name" character varying(100) COLLATE pg_catalog."default",
+    CONSTRAINT "Employees_pkey" PRIMARY KEY ("Id")
+)
+WITH (
+    OIDS = FALSE
+)
+TABLESPACE pg_default;
+
+ALTER TABLE public."Employees"
+    OWNER to postgres;
